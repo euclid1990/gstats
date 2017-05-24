@@ -1,0 +1,16 @@
+version: "2"
+
+services:
+  code:
+    image: ubuntu:16.04
+    volumes:
+      - .:/go/src/github.com/euclid1990/gstats
+  app:
+    image: golang:1.8
+    restart: on-failure
+    volumes_from:
+      - code
+    working_dir: /go/src/github.com/euclid1990/gstats
+    environment:
+      - GOBIN=/go/bin
+    tty: true

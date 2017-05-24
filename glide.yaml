@@ -1,0 +1,10 @@
+package: github.com/euclid1990/gstats
+import:
+- package: github.com/codegangsta/cli
+  version: v1.19.1
+- package: google.golang.org/api
+  subpackages:
+  - sheets/v4
+- package: golang.org/x/oauth2
+  subpackages:
+  - '...'
