@@ -6,7 +6,8 @@ services:
     volumes:
       - .:/go/src/github.com/euclid1990/gstats
   app:
-    image: golang:1.8
+    build: .
+    image: gstats:latest
     restart: on-failure
     volumes_from:
       - code

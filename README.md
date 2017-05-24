@@ -25,6 +25,5 @@ Automatically retrieve important data of Pull Request and fill in the correspond
 $ cd /path/to/git-auto-stats
 $ docker-compose up
 $ docker-compose exec app /bin/bash
-$ go get -u github.com/Masterminds/glide
 $ glide install
 ```
