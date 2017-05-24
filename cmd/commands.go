@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"github.com/codegangsta/cli"
-	"github.com/euclid1990/gstats/utilities"
 )
 
 // List of options
