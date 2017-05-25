@@ -12,6 +12,8 @@ services:
     volumes_from:
       - code
     working_dir: /go/src/github.com/euclid1990/gstats
+    ports:
+      - "3000:3000"
     environment:
       - GOBIN=/go/bin
     tty: true
