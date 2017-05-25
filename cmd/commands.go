@@ -3,6 +3,9 @@ package cmd
 import (
 	"fmt"
 	"github.com/codegangsta/cli"
+	"github.com/euclid1990/gstats/configs"
+	"github.com/euclid1990/gstats/utilities"
+	"net/http"
 )
 
 // List of options
@@ -14,8 +17,23 @@ var Flags = []cli.Flag{
 	},
 }
 
+// Instance of Google/Github Client
+var (
+	googleOauth  *utilities.GoogleOauth
+	googleClient *http.Client
+)
+
 // Action defines the main action for gstats
 func Action(c *cli.Context) {
 	exec := c.String("exec")
 	fmt.Printf("Action: %v\n", exec)
+
+	switch exec {
+	case configs.ACTION_ALL:
+	case configs.ACTION_INIT:
+		googleOauth = utilities.NewGoogleOauth()
+		go utilities.Server(googleOauth)
+		googleClient = utilities.CreateGoogleClient(googleOauth)
+		fmt.Printf("Google Client: %v\n", googleClient)
+	}
 }
