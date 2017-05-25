@@ -48,6 +48,15 @@ func (g *GoogleOauth) getClient(ctx context.Context) *http.Client {
 		tok = g.getTokenFromWeb()
 		g.saveToken(cacheFile, tok)
 	}
+	// Renew expired token
+	if !tok.Valid() {
+		src := g.config.TokenSource(ctx, tok)
+		newToken, err := src.Token()
+		if err != nil {
+			log.Fatalf("[Google Oauth] Could not renew a token using a RefreshToken. %v", err)
+		}
+		g.saveToken(cacheFile, newToken)
+	}
 	return g.config.Client(ctx, tok)
 }
 
@@ -75,7 +84,8 @@ func (g *GoogleOauth) tokenFromFile(file string) (*oauth2.Token, error) {
 }
 
 func (g *GoogleOauth) getTokenFromWeb() *oauth2.Token {
-	authURL := g.config.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
+	// To get the refresh token, add approval_prompt=force
+	authURL := g.config.AuthCodeURL("state-token", oauth2.AccessTypeOffline, oauth2.ApprovalForce)
 	fmt.Printf("- [Google Oauth] Go to the following link: \n%v\n", authURL)
 	code := <-g.codeChan
 	tok, err := g.config.Exchange(oauth2.NoContext, code)

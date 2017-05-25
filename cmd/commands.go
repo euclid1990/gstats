@@ -34,6 +34,9 @@ func Action(c *cli.Context) {
 		googleOauth = utilities.NewGoogleOauth()
 		go utilities.Server(googleOauth)
 		googleClient = utilities.CreateGoogleClient(googleOauth)
+
+		/* Just for Testing */
 		fmt.Printf("Google Client: %v\n", googleClient)
+		utilities.NewSheet(googleClient)
 	}
 }
