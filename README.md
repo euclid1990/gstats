@@ -27,3 +27,11 @@ $ docker-compose up
 $ docker-compose exec app /bin/bash
 $ glide install
 ```
+
+### Testing
+
+You can run integration/unit tests with following commands.
+
+```
+$ go test -v $(go list ./... | grep -v /vendor | grep tests/)
+```
