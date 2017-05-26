@@ -1,10 +1,12 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"github.com/codegangsta/cli"
 	"github.com/euclid1990/gstats/configs"
 	"github.com/euclid1990/gstats/utilities"
+	"github.com/google/go-github/github"
 	"net/http"
 )
 
@@ -19,8 +21,9 @@ var Flags = []cli.Flag{
 
 // Instance of Google/Github Client
 var (
-	googleOauth  *utilities.GoogleOauth
-	googleClient *http.Client
+	googleOauth *utilities.GoogleOauth
+	githubOauth *utilities.GithubOauth
+	client      *http.Client
 )
 
 // Action defines the main action for gstats
@@ -32,11 +35,23 @@ func Action(c *cli.Context) {
 	case configs.ACTION_ALL:
 	case configs.ACTION_INIT:
 		googleOauth = utilities.NewGoogleOauth()
-		go utilities.Server(googleOauth)
-		googleClient = utilities.CreateGoogleClient(googleOauth)
+		githubOauth = utilities.NewGithubOauth()
 
-		/* Just for Testing */
-		fmt.Printf("Google Client: %v\n", googleClient)
-		utilities.NewSheet(googleClient)
+		go utilities.Server(googleOauth, githubOauth)
+		client = utilities.CreateGoogleClient(googleOauth)
+
+		// Just for Testing
+		fmt.Printf("Google Client: %v\n", client)
+		utilities.NewSheet(client)
+
+		client = utilities.CreateGithubClient(githubOauth)
+		githubClient := github.NewClient(client)
+		pulls, res, _ := githubClient.PullRequests.List(context.Background(), "euclid1990",
+			"gstats", nil)
+		fmt.Printf("API %v\n", res.Request.URL)
+		for _, pull := range pulls {
+			fmt.Printf("User: %s\nTitle: %s\nState: %s \n\n", pull.User.GetLogin(), pull.GetTitle(),
+				pull.GetState())
+		}
 	}
 }

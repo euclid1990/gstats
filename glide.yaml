@@ -17,3 +17,6 @@ import:
   - compute/metadata
 - package: github.com/gorilla/mux
   version: v1.4.0
+- package: github.com/google/go-querystring
+  subpackages:
+  - query
