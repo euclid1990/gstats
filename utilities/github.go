@@ -42,7 +42,7 @@ func CreateGithubClient(g *GithubOauth) *http.Client {
 	return client
 }
 
-func loadConfig(file string) (*Config, error) {
+func (g *GithubOauth) loadConfig(file string) (*Config, error) {
 	var config Config
 
 	b, err := ioutil.ReadFile(file)
@@ -58,7 +58,7 @@ func loadConfig(file string) (*Config, error) {
 }
 
 func (g *GithubOauth) readConfig() {
-	cfg, err := loadConfig(configs.PATH_GITHUB_SECRET)
+	cfg, err := g.loadConfig(configs.PATH_GITHUB_SECRET)
 	if err != nil {
 		log.Fatalf("[Github Oauth] Unable to read client secret file: %v", err)
 		panic(err)
