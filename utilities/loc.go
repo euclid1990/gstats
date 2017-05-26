@@ -8,11 +8,12 @@ import (
 )
 
 type Loc struct {
-	ID      string `json:"id"`
-	Name    string `json:"sheet_loc"`
-	CGithub string `json:"c_github"`
-	CLoc    string `json:"c_loc"`
-	Pr      []PR
+	ID        string `json:"id"`
+	Name      string `json:"sheet_loc"`
+	CGithub   string `json:"c_github"`
+	CLoc      string `json:"c_loc"`
+	Pr        []PR
+	UpdatedPr int
 }
 
 type PR struct {
@@ -75,6 +76,8 @@ func (loc *Loc) WriteLoc(spreadsheet *Spreadsheet) error {
 		if err != nil {
 			return err
 		}
+		loc.UpdatedPr++
 	}
+
 	return nil
 }

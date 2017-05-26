@@ -79,8 +79,8 @@ func (spreadSheet *Spreadsheet) UpdateLocSpreadsheets() error {
 		return err
 	}
 
-	for _, sheet := range sheets {
-		sh := sheet
+	for i, _ := range sheets {
+		sh := &sheets[i]
 		eg.Go(func() error {
 			err := sh.ReadLoc(spreadSheet)
 			if err != nil {
@@ -96,9 +96,11 @@ func (spreadSheet *Spreadsheet) UpdateLocSpreadsheets() error {
 			return nil
 		})
 	}
+	defer SendLocMessage(sheets)
 
-	if err := eg.Wait(); err != nil {
+	if err = eg.Wait(); err != nil {
 		return err
 	}
+
 	return nil
 }
