@@ -56,6 +56,7 @@ func (g *GoogleOauth) getClient(ctx context.Context) *http.Client {
 			log.Fatalf("[Google Oauth] Could not renew a token using a RefreshToken. %v", err)
 		}
 		g.saveToken(cacheFile, newToken)
+		return g.config.Client(ctx, newToken)
 	}
 	return g.config.Client(ctx, tok)
 }
