@@ -1,0 +1,28 @@
+machine:
+  timezone:
+    Asia/Ho_Chi_Minh
+  go:
+    version: 1.8.1
+  environment:
+    # GOROOT is not set by default
+    GOROOT: ""
+    GOPATH: "${HOME}/.go_project"
+    PATH: "${GOPATH}/bin:${PATH}"
+    BUILD_PATH: "${GOPATH}/src/github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}"
+    BUILD_DIR: ".go_project/src/github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}"
+    PROJECT_USERNAME_PATH: "${GOPATH}/src/github.com/${CIRCLE_PROJECT_USERNAME}"
+  post:
+    - mkdir -p ${PROJECT_USERNAME_PATH}
+    - rm -rf ${PROJECT_USERNAME_PATH}/*
+    - ln -sf ${HOME}/${CIRCLE_PROJECT_REPONAME} ${BUILD_PATH}
+general:
+  build_dir: ../${BUILD_DIR}
+dependencies:
+  pre:
+    - go get -u github.com/Masterminds/glide
+  override:
+    - glide install
+    - go build -v
+test:
+  override:
+    - go test -v $(go list ./... | grep -v /vendor | grep tests/)
