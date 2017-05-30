@@ -1,4 +1,5 @@
 # Github auto stats
+[![CircleCI](https://circleci.com/gh/euclid1990/gstats.svg?style=svg)](https://circleci.com/gh/euclid1990/gstats)
 
 Automatically retrieve important data of Pull Request and fill in the corresponding column in Google Spreadsheet
 

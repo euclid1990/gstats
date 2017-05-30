@@ -2,7 +2,6 @@ package utilities
 
 import (
 	"errors"
-	"fmt"
 	"net/url"
 	"strconv"
 	"strings"
@@ -11,7 +10,6 @@ import (
 func ExtractPullRequestInfo(link string) (owner string, repo string, number int, err error) {
 	var u *url.URL
 	u, err = url.Parse(link)
-	fmt.Println(u.Path)
 	if err != nil {
 		return
 	}

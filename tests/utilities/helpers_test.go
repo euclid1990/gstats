@@ -34,7 +34,6 @@ func TestExtractPullRequestInfo(t *testing.T) {
 	for tc, td := range cases {
 		want, _ := json.Marshal(td.want)
 		owner, repo, number, err := utilities.ExtractPullRequestInfo(td.input)
-		t.Log(err)
 		t.Logf("Execute %s testcase github pull request URL ... (expected %s)\n", tc, string(want))
 		assert.Equal(t, td.want.Owner, owner, "Owner should be equal")
 		assert.Equal(t, td.want.Repo, repo, "Repo should be equal")
