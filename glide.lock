@@ -1,5 +1,5 @@
-hash: 97d954f0061df20457b7889bc4d0ab730b81151048c9ac6709f70b000d4191f3
-updated: 2017-05-26T08:13:11.84728552Z
+hash: cf270a550c4310189511f97f8809c4be0756a8683360aeedf646ba2076ed2782
+updated: 2017-05-30T07:17:03.495554993Z
 imports:
 - name: cloud.google.com/go
   version: 2e6a95edb1071d750f6d7db777bf66cd2997af6c
@@ -9,7 +9,7 @@ imports:
 - name: github.com/codegangsta/cli
   version: 0bdeddeeb0f650497d603c4ad7b20cfe685682f6
 - name: github.com/golang/protobuf
-  version: 7b8002443fd4a3ce5f25ef93087c524546799a56
+  version: 9f174c986221c608fb5143bd623b6076a71feae3
   subpackages:
   - proto
   - ptypes/any
@@ -32,7 +32,7 @@ imports:
   subpackages:
   - assert
 - name: golang.org/x/net
-  version: 7dcfb8076726a3fdd9353b6b8a1f1b6be6811bd6
+  version: 3da985ce5951d99de868be4385f21ea6c2b22f24
   subpackages:
   - context
   - context/...
@@ -51,6 +51,10 @@ imports:
   - internal
   - jws
   - jwt
+- name: golang.org/x/sync
+  version: f52d1811a62927559de87708c8913c1650ce4f26
+  subpackages:
+  - errgroup
 - name: golang.org/x/text
   version: 19e51611da83d6be54ddafce4a4af510cb3e9ea4
   subpackages:
@@ -59,7 +63,7 @@ imports:
   - unicode/bidi
   - unicode/norm
 - name: google.golang.org/api
-  version: d9d64fe74969b80fb4a435ae9280c9ff061a6097
+  version: 0209b31435ad4749b84ce122e669fb098f556642
   subpackages:
   - gensupport
   - googleapi
@@ -82,7 +86,7 @@ imports:
   subpackages:
   - googleapis/rpc/status
 - name: google.golang.org/grpc
-  version: 3a46d9d51931de5beee75086205224a540233baa
+  version: 2739967807cc0e3199513569f58fda34252ad65e
   subpackages:
   - codes
   - credentials
