@@ -30,3 +30,6 @@ import:
 - package: golang.org/x/sync
   subpackages:
   - errgroup
+- package: github.com/AlecAivazis/survey
+  version: v1.1.2
+- package: github.com/mgutz/ansi

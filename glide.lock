@@ -6,6 +6,11 @@ imports:
   subpackages:
   - compute/metadata
   - internal
+- name: github.com/AlecAivazis/survey
+  version: 33556ae4bcf1007578fbec38ba686ca009651527
+  subpackages:
+  - core
+  - terminal
 - name: github.com/codegangsta/cli
   version: 0bdeddeeb0f650497d603c4ad7b20cfe685682f6
 - name: github.com/golang/protobuf
@@ -31,6 +36,12 @@ imports:
   version: 69483b4bd14f5845b5a1e55bca19e954e827f1d0
   subpackages:
   - assert
+- name: github.com/mattn/go-colorable
+  version: ded68f7a9561c023e790de24279db7ebf473ea80
+- name: github.com/mattn/go-isatty
+  version: fc9e8d8ef48496124e79ae0df75490096eccf6fe
+- name: github.com/mgutz/ansi
+  version: 9520e82c474b0a04dd04f8a40959027271bab992
 - name: golang.org/x/net
   version: 3da985ce5951d99de868be4385f21ea6c2b22f24
   subpackages:

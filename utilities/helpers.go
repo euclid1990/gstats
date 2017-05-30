@@ -77,3 +77,9 @@ func GetIDTicket(ticket, splitStr string) int {
 	}
 	return 0
 }
+
+func checkError(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}

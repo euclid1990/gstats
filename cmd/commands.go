@@ -16,6 +16,11 @@ var Flags = []cli.Flag{
 		Value: "all",
 		Usage: "Execute action you want to do",
 	},
+	cli.StringFlag{
+		Name:  "file",
+		Value: "all",
+		Usage: "Setup file secret",
+	},
 }
 
 // Instance of Google/Github Client
@@ -30,6 +35,7 @@ func Action(c *cli.Context) {
 	exec := c.String("exec")
 	fmt.Printf("Action: %v\n", exec)
 
+	file := c.String("file")
 	switch exec {
 	case configs.ACTION_ALL:
 	case configs.ACTION_LOC:
@@ -52,5 +58,7 @@ func Action(c *cli.Context) {
 		redmine := utilities.NewRedmine()
 		idArray := []int{1288, 1315}
 		fmt.Printf("%v\n", redmine.GetIds(idArray))
+	case configs.ACTION_SETUP:
+		utilities.SurveyRun(file)
 	}
 }
