@@ -53,5 +53,9 @@ func Action(c *cli.Context) {
 			fmt.Printf("User: %s\nTitle: %s\nState: %s \n\n", pull.User.GetLogin(), pull.GetTitle(),
 				pull.GetState())
 		}
+	case configs.ACTION_REDMINE:
+		redmine := utilities.NewRedmine()
+		idArray := []int{1288, 1315}
+		fmt.Printf("%v\n", redmine.GetIds(idArray))
 	}
 }
