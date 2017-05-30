@@ -7,15 +7,9 @@ import (
 	"google.golang.org/api/sheets/v4"
 	"io/ioutil"
 	"net/http"
-	"sync"
 )
 
 const SPREADSHEET_VALUE_INPUT_RAW = "RAW"
-
-var (
-	wg    sync.WaitGroup
-	mutex sync.Mutex
-)
 
 type Spreadsheet struct {
 	srv *sheets.Service
@@ -31,7 +25,7 @@ func NewSheet(client *http.Client) *Spreadsheet {
 	return spreadsheet
 }
 
-func (spreadSheet *Spreadsheet) GetSpreadSheets() ([]Loc, error) {
+func getSpreadSheets() ([]Loc, error) {
 	raw, err := ioutil.ReadFile(configs.SPREADSHEET_JSON)
 	if err != nil {
 		return nil, err
@@ -78,38 +72,24 @@ func (spreadsheet *Spreadsheet) write(spreadsheetId string, writeRange string, d
 	return nil
 }
 
-func (spreadSheet *Spreadsheet) ReadLocOfSpreadSheets(sheets []Loc) ([]Loc, error) {
+func (spreadSheet *Spreadsheet) UpdateLocSpreadsheets() error {
 	eg := errgroup.Group{}
+	sheets, err := getSpreadSheets()
+	if err != nil {
+		return err
+	}
 
-	var locData []Loc
 	for _, sheet := range sheets {
 		sh := sheet
 		eg.Go(func() error {
-			pullRequest, err := sh.ReadLoc(spreadSheet)
+			err := sh.ReadLoc(spreadSheet)
 			if err != nil {
 				return err
 			}
-			newLoc := sh
-			newLoc.Pr = pullRequest
 
-			locData = append(locData, newLoc)
-			return nil
-		})
-	}
-	if err := eg.Wait(); err != nil {
-		return nil, err
-	}
+			// github.UpdateAddtionCode(sh)
 
-	return locData, nil
-}
-
-func (spreadSheet *Spreadsheet) WriteLocOfSpreadSheets(sheets []Loc) error {
-	eg := errgroup.Group{}
-
-	for _, sheet := range sheets {
-		sh := sheet
-		eg.Go(func() error {
-			err := sh.WriteLoc(spreadSheet)
+			err = sh.WriteLoc(spreadSheet)
 			if err != nil {
 				return err
 			}
@@ -120,6 +100,5 @@ func (spreadSheet *Spreadsheet) WriteLocOfSpreadSheets(sheets []Loc) error {
 	if err := eg.Wait(); err != nil {
 		return err
 	}
-
 	return nil
 }

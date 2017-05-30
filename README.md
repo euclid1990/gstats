@@ -1,4 +1,5 @@
 # Github auto stats
+[![CircleCI](https://circleci.com/gh/euclid1990/gstats.svg?style=svg)](https://circleci.com/gh/euclid1990/gstats)
 
 Automatically retrieve important data of Pull Request and fill in the corresponding column in Google Spreadsheet
 
@@ -26,4 +27,12 @@ $ cd /path/to/git-auto-stats
 $ docker-compose up
 $ docker-compose exec app /bin/bash
 $ glide install
+```
+
+### Testing
+
+You can run integration/unit tests with following commands.
+
+```
+$ go test -v $(go list ./... | grep -v /vendor | grep tests/)
 ```

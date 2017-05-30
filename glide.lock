@@ -1,5 +1,5 @@
-hash: 00aba90a400df042ec565e05971cac302b4943fe86a04b347d6c50b177c6ef71
-updated: 2017-05-25T06:16:27.548832614Z
+hash: 97d954f0061df20457b7889bc4d0ab730b81151048c9ac6709f70b000d4191f3
+updated: 2017-05-26T08:13:11.84728552Z
 imports:
 - name: cloud.google.com/go
   version: 2e6a95edb1071d750f6d7db777bf66cd2997af6c
@@ -9,20 +9,28 @@ imports:
 - name: github.com/codegangsta/cli
   version: 0bdeddeeb0f650497d603c4ad7b20cfe685682f6
 - name: github.com/golang/protobuf
-  version: 7a211bcf3bce0e3f1d74f9894916e6f116ae83b4
+  version: 7b8002443fd4a3ce5f25ef93087c524546799a56
   subpackages:
   - proto
   - ptypes/any
+- name: github.com/google/go-github
+  version: ebfec748347a9af6793c723f8859afcd906860fb
+  subpackages:
+  - github
+- name: github.com/google/go-querystring
+  version: 53e6ce116135b80d037921a7fdd5138cf32d7a8a
+  subpackages:
+  - query
 - name: github.com/googleapis/gax-go
   version: 9af46dd5a1713e8b5cd71106287eba3cefdde50b
 - name: github.com/gorilla/context
   version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
 - name: github.com/gorilla/mux
   version: bcd8bc72b08df0f70df986b97f95590779502d31
-- name: github.com/gorilla/securecookie
-  version: 667fe4e3466a040b780561fe9b51a83a3753eefc
-- name: github.com/gorilla/sessions
-  version: ca9ada44574153444b00d3fd9c8559e4cc95f896
+- name: github.com/stretchr/testify
+  version: 69483b4bd14f5845b5a1e55bca19e954e827f1d0
+  subpackages:
+  - assert
 - name: golang.org/x/net
   version: 7dcfb8076726a3fdd9353b6b8a1f1b6be6811bd6
   subpackages:
@@ -53,6 +61,9 @@ imports:
 - name: google.golang.org/api
   version: d9d64fe74969b80fb4a435ae9280c9ff061a6097
   subpackages:
+  - gensupport
+  - googleapi
+  - googleapi/internal/uritemplates
   - sheets/v4
 - name: google.golang.org/appengine
   version: a2f4131514e563cedfdb6e7d267df9ad48591e93
@@ -86,4 +97,12 @@ imports:
   - status
   - tap
   - transport
-testImports: []
+testImports:
+- name: github.com/davecgh/go-spew
+  version: 04cdfd42973bb9c8589fd6a731800cf222fde1a9
+  subpackages:
+  - spew
+- name: github.com/pmezard/go-difflib
+  version: d8ed2627bdf02c080bf22230dbb337003b7aba2d
+  subpackages:
+  - difflib

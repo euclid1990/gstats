@@ -9,7 +9,7 @@ import (
 
 type Loc struct {
 	ID      string `json:"id"`
-	Name    string `json:"name"`
+	Name    string `json:"sheet_loc"`
 	CGithub string `json:"c_github"`
 	CLoc    string `json:"c_loc"`
 	Pr      []PR
@@ -31,12 +31,12 @@ func (loc *Loc) getIndexStart() int {
 	return indexStart
 }
 
-func (loc *Loc) ReadLoc(spreadsheet *Spreadsheet) ([]PR, error) {
+func (loc *Loc) ReadLoc(spreadsheet *Spreadsheet) error {
 	readRange := fmt.Sprintf("%s!%s:%s", loc.Name, loc.CGithub, loc.CLoc)
 
 	data, err := spreadsheet.read(loc.ID, readRange)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	indexStart := loc.getIndexStart()
@@ -61,22 +61,19 @@ func (loc *Loc) ReadLoc(spreadsheet *Spreadsheet) ([]PR, error) {
 		}
 		pullRequest = append(pullRequest, newPr)
 	}
-	return pullRequest, nil
+	loc.Pr = pullRequest
+	return nil
 }
 
 func (loc *Loc) WriteLoc(spreadsheet *Spreadsheet) error {
-	indexStart := loc.getIndexStart()
-	for i, pr := range loc.Pr {
-		rowNum := indexStart + i + 1
-		if rowNum == pr.RowNum {
-			writeRange := fmt.Sprintf("%s!%s", loc.Name, loc.CLoc+strconv.Itoa(rowNum))
-			data := [][]interface{}{
-				{pr.Loc},
-			}
-			err := spreadsheet.write(loc.ID, writeRange, data)
-			if err != nil {
-				return err
-			}
+	for _, pr := range loc.Pr {
+		writeRange := fmt.Sprintf("%s!%s", loc.Name, loc.CLoc+strconv.Itoa(pr.RowNum))
+		data := [][]interface{}{
+			{pr.Loc},
+		}
+		err := spreadsheet.write(loc.ID, writeRange, data)
+		if err != nil {
+			return err
 		}
 	}
 	return nil

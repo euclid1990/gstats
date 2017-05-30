@@ -17,3 +17,10 @@ import:
   - compute/metadata
 - package: github.com/gorilla/mux
   version: v1.4.0
+- package: github.com/google/go-querystring
+  subpackages:
+  - query
+- package: github.com/stretchr/testify
+  version: v1.1.4
+  subpackages:
+  - assert
