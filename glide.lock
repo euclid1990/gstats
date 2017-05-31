@@ -1,5 +1,5 @@
-hash: cf270a550c4310189511f97f8809c4be0756a8683360aeedf646ba2076ed2782
-updated: 2017-05-30T07:17:03.495554993Z
+hash: c35b7b1db2298ba435a190e39db155bc0a7b7d432f35533150f5331cd5b56741
+updated: 2017-05-29T01:38:48.962013925Z
 imports:
 - name: cloud.google.com/go
   version: 2e6a95edb1071d750f6d7db777bf66cd2997af6c
@@ -103,7 +103,7 @@ imports:
   - transport
 testImports:
 - name: github.com/davecgh/go-spew
-  version: 04cdfd42973bb9c8589fd6a731800cf222fde1a9
+  version: 6d212800a42e8ab5c146b8ace3490ee17e5225f9
   subpackages:
   - spew
 - name: github.com/pmezard/go-difflib

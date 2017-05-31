@@ -87,7 +87,10 @@ func (spreadSheet *Spreadsheet) UpdateLocSpreadsheets() error {
 				return err
 			}
 
-			// github.UpdateAddtionCode(sh)
+			err = GetAdditionsPullRequestGitHub(sh)
+			if err != nil {
+				return err
+			}
 
 			err = sh.WriteLoc(spreadSheet)
 			if err != nil {

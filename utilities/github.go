@@ -4,12 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/euclid1990/gstats/configs"
+	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
+	"golang.org/x/sync/errgroup"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
-	"github.com/euclid1990/gstats/configs"
 	"strings"
 )
 
@@ -34,7 +36,6 @@ func NewGithubOauth() *GithubOauth {
 		codeChan: make(chan string),
 	}
 }
-
 
 func CreateGithubClient(g *GithubOauth) *http.Client {
 	g.readConfig()
@@ -129,4 +130,30 @@ func (g *GithubOauth) saveToken(file string, token *oauth2.Token) {
 	}
 	defer f.Close()
 	json.NewEncoder(f).Encode(token)
+}
+
+func GetAdditionsPullRequestGitHub(loc *Loc) error {
+	githubOauth := NewGithubOauth()
+	client := CreateGithubClient(githubOauth)
+	githubClient := github.NewClient(client)
+	eg := errgroup.Group{}
+	for key, pr := range loc.Pr {
+		userName, repoName, pullNumber, err := ExtractPullRequestInfo(pr.Link)
+		if err != nil {
+			continue
+		}
+		numberKey := key
+		eg.Go(func() error {
+			pull, _, err := githubClient.PullRequests.Get(context.Background(), userName, repoName, pullNumber)
+			if err != nil {
+				return err
+			}
+			loc.Pr[numberKey].Loc = pull.GetAdditions()
+			return nil
+		})
+	}
+	if err := eg.Wait(); err != nil {
+		return err
+	}
+	return nil
 }
