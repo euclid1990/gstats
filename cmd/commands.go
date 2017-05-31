@@ -1,12 +1,11 @@
 package cmd
 
 import (
-	"context"
 	"fmt"
 	"github.com/codegangsta/cli"
 	"github.com/euclid1990/gstats/configs"
 	"github.com/euclid1990/gstats/utilities"
-	"github.com/google/go-github/github"
+	"log"
 	"net/http"
 )
 
@@ -33,26 +32,22 @@ func Action(c *cli.Context) {
 
 	switch exec {
 	case configs.ACTION_ALL:
+	case configs.ACTION_LOC:
+		googleOauth = utilities.NewGoogleOauth()
+		googleClient := utilities.CreateGoogleClient(googleOauth)
+		spreadSheet := utilities.NewSheet(googleClient)
+		err := spreadSheet.UpdateLocSpreadsheets()
+		if err != nil {
+			log.Fatal(err)
+		}
 	case configs.ACTION_INIT:
 		googleOauth = utilities.NewGoogleOauth()
 		githubOauth = utilities.NewGithubOauth()
-
 		go utilities.Server(googleOauth, githubOauth)
 		client = utilities.CreateGoogleClient(googleOauth)
-
-		// Just for Testing
 		fmt.Printf("Google Client: %v\n", client)
-		utilities.NewSheet(client)
-
 		client = utilities.CreateGithubClient(githubOauth)
-		githubClient := github.NewClient(client)
-		pulls, res, _ := githubClient.PullRequests.List(context.Background(), "euclid1990",
-			"gstats", nil)
-		fmt.Printf("API %v\n", res.Request.URL)
-		for _, pull := range pulls {
-			fmt.Printf("User: %s\nTitle: %s\nState: %s \n\n", pull.User.GetLogin(), pull.GetTitle(),
-				pull.GetState())
-		}
+		fmt.Printf("Github Client: %v\n", client)
 	case configs.ACTION_REDMINE:
 		redmine := utilities.NewRedmine()
 		idArray := []int{1288, 1315}

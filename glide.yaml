@@ -24,6 +24,9 @@ import:
   version: v1.1.4
   subpackages:
   - assert
+- package: github.com/google/go-github
+  subpackages:
+  - github
 - package: golang.org/x/sync
   subpackages:
   - errgroup
