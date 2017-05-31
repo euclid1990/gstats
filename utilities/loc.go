@@ -14,6 +14,7 @@ type Loc struct {
 	CLoc      string `json:"c_loc"`
 	Pr        []PR
 	UpdatedPr int
+	SheetId   string
 }
 
 type PR struct {
@@ -33,6 +34,7 @@ func (loc *Loc) getIndexStart() int {
 }
 
 func (loc *Loc) ReadLoc(spreadsheet *Spreadsheet) error {
+	loc.SheetId = spreadsheet.GetGidBySheetName(loc.ID, loc.Name)
 	readRange := fmt.Sprintf("%s!%s:%s", loc.Name, loc.CGithub, loc.CLoc)
 
 	data, err := spreadsheet.read(loc.ID, readRange)

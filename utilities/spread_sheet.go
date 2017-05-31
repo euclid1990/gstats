@@ -7,6 +7,7 @@ import (
 	"google.golang.org/api/sheets/v4"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 )
 
 const SPREADSHEET_VALUE_INPUT_RAW = "RAW"
@@ -106,4 +107,16 @@ func (spreadSheet *Spreadsheet) UpdateLocSpreadsheets() error {
 	}
 
 	return nil
+}
+
+func (spreadsheet *Spreadsheet) GetGidBySheetName(spreadsheetId string, sheetName string) string {
+	var gid int64
+	resp, _ := spreadsheet.srv.Spreadsheets.Get(spreadsheetId).IncludeGridData(true).Do()
+	sheets := resp.Sheets
+	for _, s := range sheets {
+		if s.Properties.Title == sheetName {
+			gid = s.Properties.SheetId
+		}
+	}
+	return strconv.FormatInt(gid, 10)
 }
