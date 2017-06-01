@@ -1,6 +1,7 @@
 package utilities
 
 import (
+	"crypto/tls"
 	"errors"
 	"io/ioutil"
 	"log"
@@ -33,7 +34,7 @@ func ExtractPullRequestInfo(link string) (owner string, repo string, number int,
 // Check Error and throw log break programe
 func checkErrThrowLog(err error, messages ...string) {
 	if len(messages) == 0 {
-		messages = []string{"[Redmine] You have a error: %v"}
+		messages = []string{"[Error] You have a error: %v"}
 	}
 	if err != nil {
 		for _, message := range messages {
@@ -82,4 +83,18 @@ func checkError(err error) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+// Request to Services
+func SetUpRequestToService(method string, url string, callback func(*http.Request)) *http.Response {
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	client := &http.Client{Transport: tr}
+	req, requestErr := http.NewRequest(method, url, nil)
+	checkErrThrowLog(requestErr)
+	callback(req)
+	resp, responseErr := client.Do(req)
+	checkErrThrowLog(responseErr)
+	return resp
 }

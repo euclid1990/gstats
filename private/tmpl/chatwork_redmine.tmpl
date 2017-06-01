@@ -1,0 +1,3 @@
+[info][title]Notification Change status Redmine[/title]{{if .}} {{range .}}
+{{ .User }}, Please Change status ({{ .Status }}) ({{ .DoneRatio }} %) for Task ({{ .Subject }})
+[hr]{{end}} {{else}}Not Inprogress. We have a nice day!{{end}} [/info]
