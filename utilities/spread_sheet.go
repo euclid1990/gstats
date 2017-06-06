@@ -111,7 +111,7 @@ func (spreadSheet *Spreadsheet) UpdateLocSpreadsheets() error {
 
 func (spreadsheet *Spreadsheet) GetGidBySheetName(spreadsheetId string, sheetName string) string {
 	var gid int64
-	resp, _ := spreadsheet.srv.Spreadsheets.Get(spreadsheetId).IncludeGridData(true).Do()
+	resp, _ := spreadsheet.srv.Spreadsheets.Get(spreadsheetId).Do()
 	sheets := resp.Sheets
 	for _, s := range sheets {
 		if s.Properties.Title == sheetName {

@@ -2,78 +2,96 @@ package utilities
 
 import (
 	"fmt"
-	"github.com/euclid1990/gstats/configs"
-	"regexp"
 	"strconv"
 )
+
+const REDMINE_URL_SPLIT = "/issues/"
 
 type Loc struct {
 	ID        string `json:"id"`
 	Name      string `json:"sheet_loc"`
 	CGithub   string `json:"c_github"`
+	CTicket   string `json:"c_ticket"`
+	CPoint    string `json:"c_point"`
 	CLoc      string `json:"c_loc"`
+	CRowStart int    `json:"c_row_start"`
 	Pr        []PR
 	UpdatedPr int
 	SheetId   string
 }
 
 type PR struct {
-	Link   string
-	Loc    int
-	RowNum int
-}
-
-func (loc *Loc) getIndexStart() int {
-	re := regexp.MustCompile("[0-9]+")
-	arrInt := re.FindAllString(loc.CGithub, -1)
-	indexStart, err := strconv.Atoi(arrInt[0])
-	if err != nil {
-		indexStart = 0
-	}
-	return indexStart
+	Link     string
+	IDTicket int
+	Point    int
+	Loc      int
+	RowNum   int
 }
 
 func (loc *Loc) ReadLoc(spreadsheet *Spreadsheet) error {
 	loc.SheetId = spreadsheet.GetGidBySheetName(loc.ID, loc.Name)
-	readRange := fmt.Sprintf("%s!%s:%s", loc.Name, loc.CGithub, loc.CLoc)
+
+	minCol, maxCol := GetMinMaxCharacter(loc.CTicket, loc.CGithub, loc.CLoc, loc.CPoint)
+
+	indexGithub := GetColumnDistance(minCol, loc.CGithub)
+	indexTicket := GetColumnDistance(minCol, loc.CTicket)
+
+	readRange := fmt.Sprintf("%s!%s:%s", loc.Name, minCol+strconv.Itoa(loc.CRowStart), maxCol)
 
 	data, err := spreadsheet.read(loc.ID, readRange)
 	if err != nil {
 		return err
 	}
 
-	indexStart := loc.getIndexStart()
-
 	// Receive data that you need
 	var pullRequest []PR
 	for i, row := range data {
-		rowNum := indexStart + i
+		rowNum := loc.CRowStart + i
 		newPr := PR{
 			RowNum: rowNum,
 		}
-		if len(row) > 0 {
-			if row[0].(string) == configs.GITHUB_TITLE && row[len(row)-1].(string) == configs.LOC_TITLE {
-				continue
+		rowLength := len(row)
+		if rowLength > 0 {
+			// Get Github Link
+			if indexGithub < rowLength {
+				newPr.Link = row[indexGithub].(string)
 			}
-			lineOfCode, ok := strconv.Atoi(row[len(row)-1].(string))
-			if ok != nil {
-				lineOfCode = 0
+
+			// Get ID Ticket
+			if indexTicket < rowLength {
+				ticket := row[indexTicket].(string)
+				newPr.IDTicket = GetIDTicket(ticket, REDMINE_URL_SPLIT)
 			}
-			newPr.Link = row[0].(string)
-			newPr.Loc = lineOfCode
+
 		}
 		pullRequest = append(pullRequest, newPr)
 	}
+
 	loc.Pr = pullRequest
 	return nil
 }
 
 func (loc *Loc) WriteLoc(spreadsheet *Spreadsheet) error {
+	minCol, maxCol := GetMinMaxCharacter(loc.CLoc, loc.CPoint)
+
+	indexPoint := GetColumnDistance(minCol, loc.CPoint)
+	indexLoc := GetColumnDistance(minCol, loc.CLoc)
+
+	writeLength := GetColumnDistance(minCol, maxCol) + 1
+
 	for _, pr := range loc.Pr {
-		writeRange := fmt.Sprintf("%s!%s", loc.Name, loc.CLoc+strconv.Itoa(pr.RowNum))
+		// Write Loc
+		rowNum := strconv.Itoa(pr.RowNum)
+		writeRange := fmt.Sprintf("%s!%s:%s", loc.Name, loc.CPoint+rowNum, loc.CLoc+rowNum)
+
+		values := make([]interface{}, writeLength)
+		values[indexPoint] = pr.Point
+		values[indexLoc] = pr.Loc
+
 		data := [][]interface{}{
-			{pr.Loc},
+			values,
 		}
+
 		err := spreadsheet.write(loc.ID, writeRange, data)
 		if err != nil {
 			return err

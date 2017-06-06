@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -47,4 +48,32 @@ func ParseHttpResponseBody(resp *http.Response) []byte {
 	body, err := ioutil.ReadAll(resp.Body)
 	checkErrThrowLog(err)
 	return body
+}
+
+func ConvertStringToDecimal(char string) int {
+	return int([]rune(char)[0])
+}
+
+func GetColumnDistance(from, to string) int {
+	return ConvertStringToDecimal(to) - ConvertStringToDecimal(from)
+}
+
+func GetMinMaxCharacter(chars ...string) (min string, max string) {
+	sort.Strings(chars)
+	min = chars[0]
+	max = chars[len(chars)-1]
+	return min, max
+}
+
+func GetIDTicket(ticket, splitStr string) int {
+	s := strings.Split(ticket, splitStr)
+
+	if len(s) > 1 {
+		idTicket, err := strconv.Atoi(strings.Trim(s[1], "/"))
+		if err != nil {
+			return 0
+		}
+		return idTicket
+	}
+	return 0
 }
