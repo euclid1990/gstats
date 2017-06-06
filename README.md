@@ -29,6 +29,12 @@ $ docker-compose exec app /bin/bash
 $ glide install
 ```
 
+### Setup project
+
+```sh
+$ go run main.go --exec setup --file /path/to/template/file
+```
+
 ### Testing
 
 You can run integration/unit tests with following commands.
