@@ -1,0 +1,7 @@
+[{{range $i, $value := .}}{{if $i}},{{end}}
+    {
+        "chatwork_id": "{{$value.AccountId}}",
+        "name": "{{$value.Name}}",
+        "role": "{{$value.Role}}"
+    }{{end}}
+]

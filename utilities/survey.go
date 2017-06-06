@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strconv"
+	"time"
 )
 
 type SetupGithubSecret struct {
@@ -58,6 +59,10 @@ type SetupNumberMember struct {
 	Number string `survey:"numberMember"`
 }
 
+type SetupNotice struct {
+	TimeSendReport string `survey:"redmindSendReport"`
+}
+
 type Setup struct{}
 
 func SurveyRun(file string) {
@@ -66,6 +71,9 @@ func SurveyRun(file string) {
 	setup.CopyFile(configs.PATH_GITHUB_OAUTH_TMPL, configs.PATH_GITHUB_OAUTH)
 	setup.CopyFile(configs.PATH_CHATWORK_LOC_TEMPLATE_TMPL, configs.PATH_CHATWORK_LOC_TEMPLATE)
 	setup.CopyFile(configs.PATH_CHATWORK_NOTIFY_INPROGRESS_REDMINE_TEMPLATE_TMPL, configs.PATH_CHATWORK_NOTIFY_INPROGRESS_REDMINE_TEMPLATE)
+	setup.CopyFile(configs.PATH_CHATWORK_REDMINE_TEMPLATE_TMPL, configs.PATH_CHATWORK_REDMINE_TEMPLATE)
+	setup.CopyFile(configs.PATH_REMIND_SEND_REPORT_TMPL, configs.PATH_REMIND_SEND_REPORT_TEMPLATE)
+
 	switch file {
 	case configs.ACTION_SETUP_GITHUB:
 		fmt.Println("Setup github_secret.json")
@@ -433,4 +441,41 @@ func (s Setup) newNumberMemberQs() []*survey.Question {
 		},
 	}
 	return numberMemberQs
+}
+
+func (s Setup) newChatworkNotificationQs() []*survey.Question {
+	var chatworkNoticeQs = []*survey.Question{
+		{
+			Name: "redmindSendReport",
+			Prompt: &survey.Input{
+				Message: "What time do you want to Redmine send report? (Ex: 07:06, 14:14)",
+			},
+			Validate: survey.Required,
+		},
+	}
+	return chatworkNoticeQs
+}
+
+func (s Setup) SetupNotice() {
+	notice := SetupNotice{}
+	noticeQs := s.newChatworkNotificationQs()
+
+	err := survey.Ask(noticeQs, &notice)
+	checkError(err)
+	convertTRSRToUTC, _ := time.Parse("15:04", notice.TimeSendReport)
+	convertTRSRToUTC = convertTRSRToUTC.Add(-7 * time.Hour)
+	hour, min, _ := convertTRSRToUTC.Clock()
+	var strHour, strMin string
+	if len(strconv.Itoa(hour)) == 1 {
+		strHour = "0" + strconv.Itoa(hour)
+	} else {
+		strHour = strconv.Itoa(hour)
+	}
+	if len(strconv.Itoa(min)) == 1 {
+		strMin = "0" + strconv.Itoa(min)
+	} else {
+		strMin = strconv.Itoa(min)
+	}
+	timeString := strHour + ":" + strMin
+	SendNotice(timeString)
 }

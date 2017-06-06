@@ -57,6 +57,9 @@ func Action(c *cli.Context) {
 	case configs.ACTION_REDMINE:
 		redmine := utilities.NewRedmine()
 		fmt.Printf("%v\n", redmine.NotifyInprogressIssuesToChatwork())
+	case configs.ACTION_CHATWORK:
+		setup := utilities.Setup{}
+		setup.SetupNotice()
 	case configs.ACTION_SETUP:
 		utilities.SurveyRun(file)
 	}

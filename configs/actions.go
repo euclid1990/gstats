@@ -1,13 +1,15 @@
 package configs
 
 const (
-	ACTION_ALL     = "all"
-	ACTION_INIT    = "init"
-	ACTION_REDMINE = "redmine"
-	ACTION_LOC     = "loc"
+	ACTION_ALL      = "all"
+	ACTION_INIT     = "init"
+	ACTION_REDMINE  = "redmine"
+	ACTION_LOC      = "loc"
+	ACTION_CHATWORK = "chatwork"
 
 	ACTION_SETUP               = "setup"
 	ACTION_SETUP_ALL           = "all"
+	ACTION_SETUP_CW_NOTICE     = "notice"
 	ACTION_SETUP_GITHUB        = "private/tmpl/github_secret.json"
 	ACTION_SETUP_CHATWORK      = "private/tmpl/chatwork_secret.json"
 	ACTION_SETUP_GOOGLE        = "private/tmpl/google_secret.json"
