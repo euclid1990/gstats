@@ -1,0 +1,11 @@
+[{{range $i, $e := .}}{{if $i}},{{end}}
+    {
+        "id": "{{$e.ID}}",
+        "sheet_loc": "{{$e.SheetLoc}}",
+        "c_ticket": "{{$e.CTicket}}",
+        "c_github": "{{$e.CGithub}}",
+        "c_point": "{{$e.CPoint}}",
+        "c_loc": "{{$e.CLoc}}",
+        "c_row_start": "{{$e.CRowStart}}"
+    }{{end}}
+]
