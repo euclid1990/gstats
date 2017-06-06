@@ -1,7 +1,6 @@
 package utilities
 
 import (
-	"crypto/tls"
 	"encoding/json"
 	"github.com/euclid1990/gstats/configs"
 	"io/ioutil"
@@ -9,10 +8,18 @@ import (
 	"runtime"
 	"strconv"
 	"sync"
+	"time"
+)
+
+const (
+	redmineUrlIssue = `/issues/`
+	redmineUrl      = `/issues.json`
 )
 
 type Redmine struct {
-	config *redmineConfig
+	config   *redmineConfig
+	url      string
+	urlIssue string
 }
 
 type redmineConfig struct {
@@ -41,6 +48,7 @@ type redmineIssue struct {
 	Subject        string               `json:"subject"`
 	StartDate      string               `json:"start_date"`
 	DueDate        string               `json:"due_date"`
+	DoneRatio      int                  `json:"done_ratio"`
 	EstimatedHours float64              `json:"estimated_hours"`
 	Parent         redmineRelate        `json:"parent"`
 	CustomFields   []redmineCustomField `json:"custom_fields"`
@@ -50,9 +58,22 @@ type redmineReponse struct {
 	Issue redmineIssue `json:"issue"`
 }
 
+type redmineArray struct {
+	Issues []redmineIssue `json:"issues"`
+}
+
+type redmineNotify struct {
+	User      string `json:user`
+	Status    string `json:status`
+	Subject   string `json:subject`
+	DoneRatio int    `json:done_ratio`
+}
+
 func NewRedmine() *Redmine {
 	redmine := &Redmine{}
 	redmine.loadConfig()
+	redmine.url = redmine.config.Url + redmineUrl
+	redmine.urlIssue = redmine.config.Url + redmineUrlIssue
 	return redmine
 }
 
@@ -66,23 +87,16 @@ func (r *Redmine) loadConfig() {
 }
 
 func (r *Redmine) Get(id int) redmineReponse {
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
-	client := &http.Client{Transport: tr}
-	req, requestErr := http.NewRequest("GET", r.config.Url+strconv.Itoa(id)+".json", nil)
-	checkErrThrowLog(requestErr)
-	req.Header.Add("X-Redmine-API-Key", r.config.Token)
-	req.Header.Add("Content-Type", "application/json")
-	resp, responseErr := client.Do(req)
-	checkErrThrowLog(responseErr)
+	resp := SetUpRequestToService("GET", r.urlIssue+strconv.Itoa(id)+".json", func(req *http.Request) {
+		req.Header.Add("X-Redmine-API-Key", r.config.Token)
+	})
 	response := redmineReponse{}
 	err := json.Unmarshal(ParseHttpResponseBody(resp), &response)
 	checkErrThrowLog(err)
 	return response
 }
 
-func (r *Redmine) GetIds(ids []int) []redmineReponse {
+func (r *Redmine) GetIssueByIds(ids []int) []redmineReponse {
 	count := len(ids)
 	if count == 0 {
 		return []redmineReponse{}
@@ -117,4 +131,62 @@ func (r *Redmine) GetIds(ids []int) []redmineReponse {
 	}(idChan)
 	wg.Wait()
 	return arrayRedmine
+}
+
+func (r *Redmine) GetIssueByDate(date string) redmineArray {
+	t := time.Now()
+	if date == "" {
+		date = t.Format(configs.FORMAT_DATE)
+	}
+	resp := SetUpRequestToService("GET", r.url+"?created_on=%3E%3C"+date, func(req *http.Request) {
+		req.Header.Add("X-Redmine-API-Key", r.config.Token)
+	})
+	response := redmineArray{}
+	err := json.Unmarshal(ParseHttpResponseBody(resp), &response)
+	checkErrThrowLog(err)
+	return response
+}
+
+func (r *Redmine) NotifyInprogressIssuesToChatwork() []redmineNotify {
+	data := r.GetIssueByDate("")
+	redmineChan := make(chan redmineIssue)
+	arrayNotify := []redmineNotify{}
+	locker := sync.Mutex{}
+	wg := sync.WaitGroup{}
+	for i := 1; i < runtime.GOMAXPROCS(0); i++ {
+		wg.Add(1)
+		go func(redmineChan chan redmineIssue) {
+			defer wg.Done()
+			for {
+				select {
+				case issue, ok := <-redmineChan:
+					if !ok {
+						return
+					}
+					if issue.Status.Id != configs.ISSUE_STATUS_RESOLVED { /*	issue = 3  is resolved	*/
+						temp := redmineNotify{
+							User:      issue.AssignTo.Name,
+							Status:    issue.Status.Name,
+							Subject:   issue.Subject,
+							DoneRatio: issue.DoneRatio,
+						}
+						locker.Lock()
+						arrayNotify = append(arrayNotify, temp)
+						locker.Unlock()
+					}
+				}
+			}
+		}(redmineChan)
+	}
+
+	go func(redmineChan chan<- redmineIssue) {
+		for _, issue := range data.Issues {
+			redmineChan <- issue
+		}
+		close(redmineChan)
+	}(redmineChan)
+	wg.Wait()
+	chatwork := NewChatwork()
+	chatwork.SendInprogressIssuesMessage(arrayNotify)
+	return arrayNotify
 }

@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 const BaseUrl = `https://api.chatwork.com/v2`
@@ -94,9 +95,9 @@ func (c *Chatwork) sendMessage(endpoint string, params map[string]string) error 
 func SendLocMessage(loc []Loc) error {
 	var body bytes.Buffer
 	chatwork := NewChatwork()
-	chatwork.setTemplate(configs.PATH_CHATWORK_TEMPLATE)
+	chatwork.setTemplate(configs.PATH_CHATWORK_LOC_TEMPLATE)
 
-	t := template.Must(template.New("chatwork_notice.tmpl").ParseFiles(chatwork.tmpl))
+	t := template.Must(template.New(strings.Split(configs.PATH_CHATWORK_LOC_TEMPLATE, "/")[1]).ParseFiles(chatwork.tmpl))
 	err := t.Execute(&body, loc)
 	if err != nil {
 		panic(err)
@@ -106,4 +107,18 @@ func SendLocMessage(loc []Loc) error {
 		return sendErr
 	}
 	return nil
+}
+
+func (c *Chatwork) SendInprogressIssuesMessage(data []redmineNotify) {
+	chatwork := NewChatwork()
+	chatwork.setTemplate(configs.PATH_CHATWORK_REDMINE_TEMPLATE)
+
+	var body bytes.Buffer
+	t := template.Must(template.New(strings.Split(configs.PATH_CHATWORK_REDMINE_TEMPLATE, "/")[1]).ParseFiles(chatwork.tmpl))
+	exeErr := t.Execute(&body, data)
+	checkErrThrowLog(exeErr)
+	err := chatwork.sendMessage("/rooms/"+chatwork.config.CWRoomId+"/messages", map[string]string{
+		"body": body.String(),
+	})
+	checkErrThrowLog(err)
 }

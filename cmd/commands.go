@@ -56,8 +56,7 @@ func Action(c *cli.Context) {
 		fmt.Printf("Github Client: %v\n", client)
 	case configs.ACTION_REDMINE:
 		redmine := utilities.NewRedmine()
-		idArray := []int{1288, 1315}
-		fmt.Printf("%v\n", redmine.GetIds(idArray))
+		fmt.Printf("%v\n", redmine.NotifyInprogressIssuesToChatwork())
 	case configs.ACTION_SETUP:
 		utilities.SurveyRun(file)
 	}
