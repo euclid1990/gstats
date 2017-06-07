@@ -110,14 +110,13 @@ func SendLocMessage(loc []Loc) error {
 }
 
 func (c *Chatwork) SendInprogressIssuesMessage(data []redmineNotify) {
-	chatwork := NewChatwork()
-	chatwork.setTemplate(configs.PATH_CHATWORK_REDMINE_TEMPLATE)
+	c.setTemplate(configs.PATH_CHATWORK_NOTIFY_INPROGRESS_REDMINE_TEMPLATE)
 
 	var body bytes.Buffer
-	t := template.Must(template.New(strings.Split(configs.PATH_CHATWORK_REDMINE_TEMPLATE, "/")[1]).ParseFiles(chatwork.tmpl))
+	t := template.Must(template.New(strings.Split(configs.PATH_CHATWORK_NOTIFY_INPROGRESS_REDMINE_TEMPLATE, "/")[1]).ParseFiles(c.tmpl))
 	exeErr := t.Execute(&body, data)
 	checkErrThrowLog(exeErr)
-	err := chatwork.sendMessage("/rooms/"+chatwork.config.CWRoomId+"/messages", map[string]string{
+	err := c.sendMessage("/rooms/"+c.config.CWRoomId+"/messages", map[string]string{
 		"body": body.String(),
 	})
 	checkErrThrowLog(err)

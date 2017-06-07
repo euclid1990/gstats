@@ -65,7 +65,7 @@ func SurveyRun(file string) {
 	setup.CopyFile(configs.PATH_GOOGLE_OAUTH_TMPL, configs.PATH_GOOGLE_OAUTH)
 	setup.CopyFile(configs.PATH_GITHUB_OAUTH_TMPL, configs.PATH_GITHUB_OAUTH)
 	setup.CopyFile(configs.PATH_CHATWORK_LOC_TEMPLATE_TMPL, configs.PATH_CHATWORK_LOC_TEMPLATE)
-	setup.CopyFile(configs.PATH_CHATWORK_REDMINE_TEMPLATE_TMPL, configs.PATH_CHATWORK_REDMINE_TEMPLATE)
+	setup.CopyFile(configs.PATH_CHATWORK_NOTIFY_INPROGRESS_REDMINE_TEMPLATE_TMPL, configs.PATH_CHATWORK_NOTIFY_INPROGRESS_REDMINE_TEMPLATE)
 	switch file {
 	case configs.ACTION_SETUP_GITHUB:
 		fmt.Println("Setup github_secret.json")
