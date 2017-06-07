@@ -52,6 +52,7 @@ type redmineIssue struct {
 	EstimatedHours float64              `json:"estimated_hours"`
 	Parent         redmineRelate        `json:"parent"`
 	CustomFields   []redmineCustomField `json:"custom_fields"`
+	Url            string
 }
 
 type redmineReponse struct {

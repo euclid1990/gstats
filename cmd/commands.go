@@ -57,6 +57,14 @@ func Action(c *cli.Context) {
 	case configs.ACTION_REDMINE:
 		redmine := utilities.NewRedmine()
 		fmt.Printf("%v\n", redmine.NotifyInprogressIssuesToChatwork())
+		project, err := utilities.NewProject(redmine)
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = project.NotifyOverdueIssuesToChatwork()
+		if err != nil {
+			log.Fatal(err)
+		}
 	case configs.ACTION_SETUP:
 		utilities.SurveyRun(file)
 	}

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/euclid1990/gstats/configs"
 	"html/template"
 	"io/ioutil"
@@ -120,4 +121,22 @@ func (c *Chatwork) SendInprogressIssuesMessage(data []redmineNotify) {
 		"body": body.String(),
 	})
 	checkErrThrowLog(err)
+}
+
+func (c *Chatwork) SendOverdueIssuesMessage(project *Project) error {
+	c.setTemplate(configs.PATH_CHATWORK_OVERDUE_TEMPLATE)
+
+	var body bytes.Buffer
+	t := template.Must(template.New(strings.Split(configs.PATH_CHATWORK_OVERDUE_TEMPLATE, "/")[1]).ParseFiles(c.tmpl))
+	err := t.Execute(&body, project)
+	if err != nil {
+		return err
+	}
+	err = c.sendMessage(fmt.Sprintf("/rooms/%s/messages", c.config.CWRoomId), map[string]string{
+		"body": body.String(),
+	})
+	if err != nil {
+		return err
+	}
+	return nil
 }
