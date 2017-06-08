@@ -122,3 +122,15 @@ func (c *Chatwork) SendInprogressIssuesMessage(data []redmineNotify) {
 	})
 	checkErrThrowLog(err)
 }
+
+func (c *Chatwork) SendNoticeMemberNotHaveTaskInprogeress(data redmineNoticeUser) {
+	var body bytes.Buffer
+	chatwork := NewChatwork()
+	chatwork.setTemplate(configs.PATH_REDMINE_NOTICE_USER)
+
+	t := template.Must(template.New(strings.Split(configs.PATH_REDMINE_NOTICE_USER, "/")[1]).ParseFiles(chatwork.tmpl))
+	err := t.Execute(&body, data)
+	checkErrThrowLog(err)
+	sendErr := chatwork.sendMessage("/rooms/"+chatwork.config.CWRoomId+"/messages", map[string]string{"body": body.String()})
+	checkErrThrowLog(sendErr)
+}

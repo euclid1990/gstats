@@ -38,8 +38,9 @@ type SetupSpreadSheetsSecret struct {
 }
 
 type SetupRedmineSecret struct {
-	Token string `survey:"redmineToken"`
-	Url   string `survey:"redmineUrl"`
+	Token             string `survey:"redmineToken"`
+	Url               string `survey:"redmineUrl"`
+	ProjectIdentifier string `survey:"redmineProjectIdentifier"`
 }
 
 type SetupNumberSpread struct {
@@ -329,6 +330,13 @@ func (s Setup) newRedmineQs() []*survey.Question {
 			Name: "redmineUrl",
 			Prompt: &survey.Input{
 				Message: "What is your Redmine Url?",
+			},
+			Validate: survey.Required,
+		},
+		{
+			Name: "redmineProjectIdentifier",
+			Prompt: &survey.Input{
+				Message: "What is your identifier Redmine project?",
 			},
 			Validate: survey.Required,
 		},
