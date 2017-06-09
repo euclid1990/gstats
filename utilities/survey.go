@@ -38,12 +38,24 @@ type SetupSpreadSheetsSecret struct {
 }
 
 type SetupRedmineSecret struct {
-	Token string `survey:"redmineToken"`
-	Url   string `survey:"redmineUrl"`
+	Token             string `survey:"redmineToken"`
+	Url               string `survey:"redmineUrl"`
+	ProjectIdentifier string `survey:"redmineProjectIdentifier"`
 }
 
 type SetupNumberSpread struct {
 	Number string `survey:"numberSpreadQs"`
+}
+
+type SetupMember struct {
+	ChatworkId  string `survey:"chatworkId"`
+	RedmineId   string `survery:"redmineId"`
+	Name        string `survery:"name"`
+	ProjectRole string `survery:"projectRole"`
+}
+
+type SetupNumberMember struct {
+	Number string `survey:"numberMember"`
 }
 
 type Setup struct{}
@@ -70,6 +82,9 @@ func SurveyRun(file string) {
 	case configs.ACTION_SETUP_REDMINE:
 		fmt.Println("Setup redmine_secret.json")
 		setup.SetupRedmine()
+	case configs.ACTION_SETUP_MEMBER:
+		fmt.Println("Setup members.json")
+		setup.SetupMember()
 	case configs.ACTION_SETUP_ALL:
 		setup.SetupAll()
 	}
@@ -103,6 +118,9 @@ func (s Setup) SetupAll() {
 	fmt.Printf("\n")
 	fmt.Println("5. Setup redmine_secret.json")
 	s.SetupRedmine()
+	fmt.Printf("\n")
+	fmt.Println("6. Setup members.json")
+	s.SetupMember()
 }
 
 func (s Setup) writeFileSetup(data interface{}, inputFilePath string, outputFilePath string) {
@@ -186,6 +204,32 @@ func (s Setup) SetupRedmine() {
 	checkError(err)
 
 	s.writeFileSetup(redmine, configs.PATH_REDMINE_SECRET_TMPL, configs.PATH_REDMINE_SECRET)
+}
+
+func (s Setup) SetupMember() {
+	numberMember := SetupNumberMember{}
+	numberMemberQs := s.newNumberMemberQs()
+	err := survey.Ask(numberMemberQs, &numberMember)
+	checkError(err)
+
+	loopNumberMemberQs, errLoop := strconv.Atoi(numberMember.Number)
+	checkError(errLoop)
+
+	var member []SetupMember = make([]SetupMember, 0)
+
+	mbQs := make(map[int][]*survey.Question)
+
+	for i := 0; i < loopNumberMemberQs; i++ {
+		fmt.Println("\n")
+		fmt.Println("Member ", i+1)
+		n := SetupMember{}
+		mbQs[i] = s.newMemberQs()
+		err = survey.Ask(mbQs[i], &n)
+		checkError(err)
+		member = append(member, n)
+	}
+
+	s.writeFileSetup(member, configs.PATH_MEMBER_TMPL, configs.PATH_MEMBER)
 }
 
 func (s Setup) newSpreadSheetQs() []*survey.Question {
@@ -332,6 +376,61 @@ func (s Setup) newRedmineQs() []*survey.Question {
 			},
 			Validate: survey.Required,
 		},
+		{
+			Name: "redmineProjectIdentifier",
+			Prompt: &survey.Input{
+				Message: "What is your identifier Redmine project?",
+			},
+			Validate: survey.Required,
+		},
 	}
 	return redmineQs
+}
+
+func (s Setup) newMemberQs() []*survey.Question {
+	var memberQs = []*survey.Question{
+		{
+			Name: "chatworkId",
+			Prompt: &survey.Input{
+				Message: "What is chatwork id member?",
+			},
+			Validate: survey.Required,
+		},
+		{
+			Name: "redmineId",
+			Prompt: &survey.Input{
+				Message: "What is redmine id member?",
+			},
+			Validate: survey.Required,
+		},
+		{
+			Name: "name",
+			Prompt: &survey.Input{
+				Message: "What is member name?",
+			},
+			Validate: survey.Required,
+		},
+		{
+			Name: "projectRole",
+			Prompt: &survey.Select{
+				Message: "What is member role",
+				Options: []string{"Leader", "Developer", "Tester", "QA"},
+			},
+			Validate: survey.Required,
+		},
+	}
+	return memberQs
+}
+
+func (s Setup) newNumberMemberQs() []*survey.Question {
+	var numberMemberQs = []*survey.Question{
+		{
+			Name: "numberMember",
+			Prompt: &survey.Input{
+				Message: "How many member you want to update?",
+			},
+			Validate: survey.Required,
+		},
+	}
+	return numberMemberQs
 }

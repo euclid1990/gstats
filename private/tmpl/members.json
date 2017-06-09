@@ -1,0 +1,8 @@
+[{{range $i, $value := .}}{{if $i}},{{end}}
+    {
+        "chatwork_id": {{$value.ChatworkId}},
+        "redmine_id": {{$value.RedmineId}},
+        "name": "{{$value.Name}}",
+        {{if eq $value.ProjectRole `Leader`}}"project_role": 1 {{end}}{{if eq $value.ProjectRole `Developer`}}"project_role": 2 {{end}}{{if eq $value.ProjectRole `Tester`}}"project_role": 3 {{end}}{{if eq $value.ProjectRole `QA`}}"project_role": 4 {{end}}
+    }{{end}}
+]
