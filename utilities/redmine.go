@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	redmineUrlIssue = `/issues/`
-	redmineUrl      = `/issues.json`
+	REDMINE_URL_ISSUE = `/issues/`
+	REDMINE_URL       = `/issues.json`
 )
 
 type Redmine struct {
@@ -63,17 +63,17 @@ type redmineArray struct {
 }
 
 type redmineNotify struct {
-	User      string `json:user`
-	Status    string `json:status`
-	Subject   string `json:subject`
-	DoneRatio int    `json:done_ratio`
+	User      string `json:"user"`
+	Status    string `json:"status"`
+	Subject   string `json:"subject"`
+	DoneRatio int    `json:"done_ratio"`
 }
 
 func NewRedmine() *Redmine {
 	redmine := &Redmine{}
 	redmine.loadConfig()
-	redmine.url = redmine.config.Url + redmineUrl
-	redmine.urlIssue = redmine.config.Url + redmineUrlIssue
+	redmine.url = redmine.config.Url + REDMINE_URL
+	redmine.urlIssue = redmine.config.Url + REDMINE_URL_ISSUE
 	return redmine
 }
 
@@ -189,4 +189,52 @@ func (r *Redmine) NotifyInprogressIssuesToChatwork() []redmineNotify {
 	chatwork := NewChatwork()
 	chatwork.SendInprogressIssuesMessage(arrayNotify)
 	return arrayNotify
+}
+
+func (r *Redmine) UpdateStoryPoint(loc *Loc) error {
+	prs := loc.Pr
+	prChan := make(chan PR)
+	arrayErr := []error{}
+	arrayPR := []PR{}
+	locker := sync.Mutex{}
+	wg := sync.WaitGroup{}
+	for i := 1; i < runtime.GOMAXPROCS(0); i++ {
+		wg.Add(1)
+		go func(prChan chan PR) {
+			defer wg.Done()
+			for {
+				select {
+				case pr, ok := <-prChan:
+					if !ok {
+						return
+					}
+					issue := r.Get(pr.IDTicket)
+					if len(issue.Issue.CustomFields) != 0 {
+						point, err := strconv.Atoi(issue.Issue.CustomFields[0].Value)
+						pr.Point = point
+						if err != nil {
+							arrayErr = append(arrayErr, err)
+							checkError(err)
+						}
+					}
+					locker.Lock()
+					arrayPR = append(arrayPR, pr)
+					locker.Unlock()
+				}
+			}
+		}(prChan)
+	}
+
+	go func(prChan chan<- PR) {
+		for _, pr := range prs {
+			prChan <- pr
+		}
+		close(prChan)
+	}(prChan)
+	wg.Wait()
+	if len(arrayErr) > 0 {
+		return arrayErr[1]
+	}
+	loc.Pr = arrayPR
+	return nil
 }

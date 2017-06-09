@@ -79,6 +79,7 @@ func (spreadSheet *Spreadsheet) UpdateLocSpreadsheets() error {
 	if err != nil {
 		return err
 	}
+	redmine := NewRedmine()
 
 	for i, _ := range sheets {
 		sh := &sheets[i]
@@ -87,7 +88,10 @@ func (spreadSheet *Spreadsheet) UpdateLocSpreadsheets() error {
 			if err != nil {
 				return err
 			}
-
+			errRed := redmine.UpdateStoryPoint(sh)
+			if errRed != nil {
+				return errRed
+			}
 			err = GetAdditionsPullRequestGitHub(sh)
 			if err != nil {
 				return err
