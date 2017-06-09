@@ -13,4 +13,5 @@ const (
 	ACTION_SETUP_GOOGLE        = "private/tmpl/google_secret.json"
 	ACTION_SETUP_SPREAD_SHEETS = "private/tmpl/spread_sheets.json"
 	ACTION_SETUP_REDMINE       = "private/tmpl/redmine_secret.json"
+	ACTION_SETUP_MEMBER        = "private/tmpl/members.json"
 )

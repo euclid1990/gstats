@@ -10,6 +10,9 @@ const (
 	PATH_CHATWORK_SECRET           = "private/chatwork_secret.json"
 	PATH_REDMINE_SECRET            = "private/redmine_secret.json"
 	PATH_SPREAD_SHEETS             = "private/spread_sheets.json"
+	PATH_REDMINE_USER              = "private/redmine_user.json"
+	PATH_REDMINE_NOTICE_USER       = "private/redmine_notice.tmpl"
+	PATH_MEMBER                    = "private/member.json"
 
 	PATH_GOOGLE_SECRET_TMPL             = "private/tmpl/google_secret.json"
 	PATH_GOOGLE_OAUTH_TMPL              = "private/tmpl/google_oauth.json"
@@ -20,4 +23,5 @@ const (
 	PATH_CHATWORK_REDMINE_TEMPLATE_TMPL = "private/tmpl/chatwork_redmine.tmpl"
 	PATH_REDMINE_SECRET_TMPL            = "private/tmpl/redmine_secret.json"
 	PATH_SPREAD_SHEETS_TMPL             = "private/tmpl/spread_sheets.json"
+	PATH_MEMBER_TMPL                    = "private/tmpl/members.json"
 )

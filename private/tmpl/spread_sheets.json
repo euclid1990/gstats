@@ -6,6 +6,6 @@
         "c_github": "{{$e.CGithub}}",
         "c_point": "{{$e.CPoint}}",
         "c_loc": "{{$e.CLoc}}",
-        "c_row_start": "{{$e.CRowStart}}"
+        "c_row_start": {{$e.CRowStart}}
     }{{end}}
 ]
