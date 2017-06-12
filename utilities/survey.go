@@ -229,7 +229,7 @@ func (s Setup) SetupMember() {
 		member = append(member, n)
 	}
 
-	s.writeFileSetup(member, configs.PATH_MEMBER_TMPL, configs.PATH_MEMBER)
+	s.writeFileSetup(member, configs.PATH_MEMBERS_TMPL, configs.PATH_MEMBERS)
 }
 
 func (s Setup) newSpreadSheetQs() []*survey.Question {
