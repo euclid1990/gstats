@@ -1,6 +1,24 @@
 #!/usr/bin/env bash
-crontab -l > mycron
-echo "$MIN $HOUR $DAYOFMONTH $MONTH $DAYOFWEEK $COMMAND"
-echo "$MIN $HOUR $DAYOFMONTH $MONTH $DAYOFWEEK $COMMAND" >> mycron
-crontab mycron
-rm mycron
+GetList () {
+    crontab -l > mycron
+}
+
+Add () {
+    # crontab -l > mycron
+    crontab mycron
+    rm mycron
+}
+
+option="${1}"
+case ${option} in
+    -l)
+        GetList
+    ;;
+    -c)
+        Add
+    ;;
+    -h)
+        echo "`basename ${0}`:usage: [-c create] | [-d delete] [crontab_syntax]"
+        exit 1
+    ;;
+esac
