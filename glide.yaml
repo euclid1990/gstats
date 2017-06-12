@@ -33,3 +33,6 @@ import:
 - package: github.com/AlecAivazis/survey
   version: v1.1.2
 - package: github.com/mgutz/ansi
+- package: github.com/robfig/cron
+  version: v1
+- package: github.com/jasonlvhit/gocron

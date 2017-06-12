@@ -30,6 +30,13 @@ type ChatworkSendMessageResponse struct {
 	MessageId string `json:"message_id"`
 }
 
+type Member struct {
+	CWId      int    `json:"chatwork_id"`
+	RedmindId int    `json:"redmine_id"`
+	Name      string `json:"name"`
+	PjRole    int    `json:"project_role"`
+}
+
 func NewChatwork() *Chatwork {
 	chatwork := new(Chatwork)
 	chatwork.readConfig()
@@ -120,4 +127,33 @@ func (c *Chatwork) SendInprogressIssuesMessage(data []redmineNotify) {
 		"body": body.String(),
 	})
 	checkErrThrowLog(err)
+}
+
+func SendRemindDailyReport() {
+	var body bytes.Buffer
+	members := getAllChatworkMember()
+	chatwork := NewChatwork()
+	chatwork.setTemplate(configs.PATH_REMIND_SEND_REPORT_TEMPLATE)
+
+	t := template.Must(template.New("remind_send_report.tmpl").ParseFiles(chatwork.tmpl))
+	err := t.Execute(&body, members)
+	if err != nil {
+		log.Fatal("Build template failed!")
+	}
+	sendErr := chatwork.sendMessage("/rooms/"+chatwork.config.CWRoomId+"/messages", map[string]string{"body": body.String()})
+	if sendErr != nil {
+		log.Fatal("Send message failed!")
+	}
+}
+
+func getAllChatworkMember() []Member {
+	var members []Member
+	b, err := ioutil.ReadFile(configs.PATH_MEMBER)
+	if err != nil {
+		log.Fatalf("[Chatwork] Unable to read member file: %v", err)
+	}
+	if err = json.Unmarshal(b, &members); err != nil {
+		log.Fatalf("[Chatwork] Unable to parse member file: %v", err)
+	}
+	return members
 }
