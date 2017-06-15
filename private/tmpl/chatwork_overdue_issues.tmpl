@@ -1,0 +1,6 @@
+[info][title]Project {{.Name}}[/title]Hi [To:{{.Members.LeaderID}}] {{.Members.LeaderName}}, Please check following report of overdue tasks.
+{{range $key, $member := .Members.List}}
+[To:{{$member.ChatworkID}}] {{$member.Name}}
+- Overdue date task: 
+{{range $k, $issue := $member.Issues}}---- {{ $issue.Url }}
+{{end}}{{end}}[/info]
