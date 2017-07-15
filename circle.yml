@@ -9,20 +9,26 @@ machine:
     GOPATH: "${HOME}/.go_project"
     PATH: "${GOPATH}/bin:${PATH}"
     BUILD_PATH: "${GOPATH}/src/github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}"
-    BUILD_DIR: ".go_project/src/github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}"
     PROJECT_USERNAME_PATH: "${GOPATH}/src/github.com/${CIRCLE_PROJECT_USERNAME}"
+    GOWS: "${HOME}/.go_workspace"
+    CACHE_DIR: ".glide"
   post:
     - mkdir -p ${PROJECT_USERNAME_PATH}
     - rm -rf ${PROJECT_USERNAME_PATH}/*
     - ln -sf ${HOME}/${CIRCLE_PROJECT_REPONAME} ${BUILD_PATH}
 general:
-  build_dir: ../${BUILD_DIR}
+  build_dir: ../../../${BUILD_PATH}
 dependencies:
   pre:
+    - if [ ! -d ${GOWS}/${CACHE_DIR} ]; then mkdir -p ${GOWS}/${CACHE_DIR}; fi
+    - cp -r ${GOWS}/${CACHE_DIR} ${HOME}/
     - go get -u github.com/Masterminds/glide
   override:
-    - glide install
+    - glide up --force
     - go build -v
+  post:
+    - ls -la
+    - rsync -azC --delete ${HOME}/${CACHE_DIR}/ ${GOWS}/${CACHE_DIR}/
 test:
   override:
     - go test -v $(go list ./... | grep -v /vendor | grep tests/)
